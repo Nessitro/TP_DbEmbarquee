@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="TPDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Agence">
+          <Key>
+            <PropertyRef Name="CodeAgence" />
+          </Key>
+          <Property Name="CodeAgence" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Adresse" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Ville" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Telephone" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Clients">
+          <Key>
+            <PropertyRef Name="CIN" />
+          </Key>
+          <Property Name="CIN" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nom" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Prenom" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateNaissance" Type="datetime" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Adresse" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Ville" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Ligne_Telephonique">
+          <Key>
+            <PropertyRef Name="Numero" />
+          </Key>
+          <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateActivationGSM" Type="datetime" Nullable="false" />
+          <Property Name="CodeAgence" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EtatLigne" Type="bit" Nullable="false" />
+          <Property Name="Agence" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CIN" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SMS">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Vers" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateEnvoi" Type="datetime" Nullable="false" />
+          <Property Name="TextSms" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="PrixSms" Type="float" Nullable="false" />
+          <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Ligne_Telephonique_ToAgence">
+          <End Role="Agence" Type="Self.Agence" Multiplicity="1" />
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Agence">
+              <PropertyRef Name="CodeAgence" />
+            </Principal>
+            <Dependent Role="Ligne_Telephonique">
+              <PropertyRef Name="CodeAgence" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ligne_Telephonique_ToClients">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="CIN" />
+            </Principal>
+            <Dependent Role="Ligne_Telephonique">
+              <PropertyRef Name="CIN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SMS_ToLigne_Telephonique">
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
+          <End Role="SMS" Type="Self.SMS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="SMS">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TPDbModelStoreContainer">
+          <EntitySet Name="Agence" EntityType="Self.Agence" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Clients" EntityType="Self.Clients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ligne_Telephonique" EntityType="Self.Ligne_Telephonique" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SMS" EntityType="Self.SMS" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Ligne_Telephonique_ToAgence" Association="Self.FK_Ligne_Telephonique_ToAgence">
+            <End Role="Agence" EntitySet="Agence" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ligne_Telephonique_ToClients" Association="Self.FK_Ligne_Telephonique_ToClients">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SMS_ToLigne_Telephonique" Association="Self.FK_SMS_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="SMS" EntitySet="SMS" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TPDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Agence">
+          <Key>
+            <PropertyRef Name="CodeAgence" />
+          </Key>
+          <Property Name="CodeAgence" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Adresse" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Ville" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Telephone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_Ligne_Telephonique_ToAgence" FromRole="Agence" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <EntityType Name="Clients">
+          <Key>
+            <PropertyRef Name="CIN" />
+          </Key>
+          <Property Name="CIN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Nom" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Prenom" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateNaissance" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Adresse" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Ville" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_Ligne_Telephonique_ToClients" FromRole="Clients" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <EntityType Name="Ligne_Telephonique">
+          <Key>
+            <PropertyRef Name="Numero" />
+          </Key>
+          <Property Name="Numero" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateActivationGSM" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CodeAgence" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="EtatLigne" Type="Boolean" Nullable="false" />
+          <Property Name="Agence" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CIN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Agence1" Relationship="Self.FK_Ligne_Telephonique_ToAgence" FromRole="Ligne_Telephonique" ToRole="Agence" />
+          <NavigationProperty Name="Clients" Relationship="Self.FK_Ligne_Telephonique_ToClients" FromRole="Ligne_Telephonique" ToRole="Clients" />
+          <NavigationProperty Name="SMS" Relationship="Self.FK_SMS_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="SMS" />
+        </EntityType>
+        <EntityType Name="SMS">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Vers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateEnvoi" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TextSms" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PrixSms" Type="Double" Nullable="false" />
+          <Property Name="Numero" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_SMS_ToLigne_Telephonique" FromRole="SMS" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <Association Name="FK_Ligne_Telephonique_ToAgence">
+          <End Role="Agence" Type="Self.Agence" Multiplicity="1" />
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Agence">
+              <PropertyRef Name="CodeAgence" />
+            </Principal>
+            <Dependent Role="Ligne_Telephonique">
+              <PropertyRef Name="CodeAgence" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ligne_Telephonique_ToClients">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="CIN" />
+            </Principal>
+            <Dependent Role="Ligne_Telephonique">
+              <PropertyRef Name="CIN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SMS_ToLigne_Telephonique">
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
+          <End Role="SMS" Type="Self.SMS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="SMS">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TPDataContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Agence" EntityType="Self.Agence" />
+          <EntitySet Name="Clients" EntityType="Self.Clients" />
+          <EntitySet Name="Ligne_Telephonique" EntityType="Self.Ligne_Telephonique" />
+          <EntitySet Name="SMS" EntityType="Self.SMS" />
+          <AssociationSet Name="FK_Ligne_Telephonique_ToAgence" Association="Self.FK_Ligne_Telephonique_ToAgence">
+            <End Role="Agence" EntitySet="Agence" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ligne_Telephonique_ToClients" Association="Self.FK_Ligne_Telephonique_ToClients">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SMS_ToLigne_Telephonique" Association="Self.FK_SMS_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="SMS" EntitySet="SMS" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TPDbModelStoreContainer" CdmEntityContainer="TPDataContext">
+          <EntitySetMapping Name="Agence">
+            <EntityTypeMapping TypeName="TPDbModel.Agence">
+              <MappingFragment StoreEntitySet="Agence">
+                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
+                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
+                <ScalarProperty Name="Ville" ColumnName="Ville" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clients">
+            <EntityTypeMapping TypeName="TPDbModel.Clients">
+              <MappingFragment StoreEntitySet="Clients">
+                <ScalarProperty Name="CIN" ColumnName="CIN" />
+                <ScalarProperty Name="Nom" ColumnName="Nom" />
+                <ScalarProperty Name="Prenom" ColumnName="Prenom" />
+                <ScalarProperty Name="DateNaissance" ColumnName="DateNaissance" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
+                <ScalarProperty Name="Ville" ColumnName="Ville" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ligne_Telephonique">
+            <EntityTypeMapping TypeName="TPDbModel.Ligne_Telephonique">
+              <MappingFragment StoreEntitySet="Ligne_Telephonique">
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+                <ScalarProperty Name="DateActivationGSM" ColumnName="DateActivationGSM" />
+                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
+                <ScalarProperty Name="EtatLigne" ColumnName="EtatLigne" />
+                <ScalarProperty Name="Agence" ColumnName="Agence" />
+                <ScalarProperty Name="CIN" ColumnName="CIN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SMS">
+            <EntityTypeMapping TypeName="TPDbModel.SMS">
+              <MappingFragment StoreEntitySet="SMS">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Vers" ColumnName="Vers" />
+                <ScalarProperty Name="DateEnvoi" ColumnName="DateEnvoi" />
+                <ScalarProperty Name="TextSms" ColumnName="TextSms" />
+                <ScalarProperty Name="PrixSms" ColumnName="PrixSms" />
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
