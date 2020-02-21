@@ -1,7 +1,6 @@
 # TP_DbEmbarquee
 
-## Travaux pratique : Bases de données embarquées
+## Travaux pratique: Bases de données embarquées
 
-Deadline => 23/02/2020
-
-TP => Tp.md
+* Deadline: before 23/02/2020
+* TP: [Vers le TP](Tp.md) 
