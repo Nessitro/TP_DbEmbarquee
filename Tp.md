@@ -162,48 +162,43 @@ GO
 4. Afficher les clients qui sont abonnés dans les agences de Casablanca.
 
 ```SQL
-SELECT *
-FROM [dbo].[Clients] AS [client]
-WHERE  EXISTS (
-	SELECT 1
-    FROM  [dbo].[Ligne_Telephonique] AS [ligne]
-    INNER JOIN [dbo].[Agence] AS [agence] ON [ligne].[CodeAgence] = [agence].[CodeAgence]
-    WHERE ([client].[CIN] = [ligne].[CIN]) AND (N'Casablanca' = [agence].[Ville])
-)
+SELECT * 
+FROM   [dbo].[clients] AS [client] 
+WHERE  EXISTS (SELECT 1 
+               FROM   [dbo].[ligne_telephonique] AS [ligne] 
+                      INNER JOIN [dbo].[agence] AS [agence] 
+                              ON [ligne].[codeagence] = [agence].[codeagence] 
+               WHERE  ( [client].[cin] = [ligne].[cin] ) 
+                      AND ( N'Casablanca' = [agence].[ville] )) 
 ```
 
 5. Afficher le nombre de ligne fixe par client [Numéro commence par 05]
 
 ```SQL
-SELECT
-[query].[CIN] AS [CIN],
-CONCAT([query].[Nom], N' ', [query].[Prenom]) as [Client Name],
-[query].[line count] AS [Line Count]
-FROM 	(SELECT
-	    [client].[CIN] AS [CIN],
-	    [client].[Nom] AS [Nom],
-	    [client].[Prenom] AS [Prenom],
-		(SELECT
-	    COUNT(1) AS [A1]
-	    FROM [dbo].[Ligne_Telephonique] AS [ligne]
-	    WHERE [client].[CIN] = [ligne].[CIN]) AS [line count]
-
-		FROM [dbo].[Clients] AS [client]
-	    WHERE  EXISTS (SELECT
-				        1 AS [line count]
-				        FROM [dbo].[Ligne_Telephonique] AS [ligne exists]
-				        WHERE ([client].[CIN] = [ligne exists].[CIN]) AND ([ligne exists].[Numero] LIKE N'05%')))
-AS [query]
+SELECT [query].[cin]                                 AS [CIN], 
+       Concat([query].[nom], N' ', [query].[prenom]) AS [Client Name], 
+       [query].[line count]                          AS [Line Count] 
+FROM   (SELECT [client].[cin]                          AS [CIN], 
+               [client].[nom]                          AS [Nom], 
+               [client].[prenom]                       AS [Prenom], 
+               (SELECT Count(1) AS [A1] 
+                FROM   [dbo].[ligne_telephonique] AS [ligne] 
+                WHERE  [client].[cin] = [ligne].[cin]) AS [line count] 
+        FROM   [dbo].[clients] AS [client] 
+        WHERE  EXISTS (SELECT 1 AS [line count] 
+                       FROM   [dbo].[ligne_telephonique] AS [ligne exists] 
+                       WHERE  ( [client].[cin] = [ligne exists].[cin] ) 
+                              AND ( [ligne exists].[numero] LIKE N'05%' ))) AS 
+       [query] 
 ```
 
-6. Afficher le nombre de ligne fixe par client [Numéro commence par 05]
+7. Afficher les SMS envoyés par le numéro 0661000000
 
 ```SQL
-SELECT
-	[ligne].[Numero] AS [Ligne],
-	(SELECT COUNT(*)
-    FROM [SMS] AS [sms]
-    WHERE [sms].[Numero] = [ligne].[Numero]) AS [SMSCount]
-FROM [Ligne_Telephonique] AS [ligne]
-WHERE [ligne].[Numero] = '0661000000'
+SELECT [ligne].[numero]                           AS [Ligne], 
+       (SELECT Count(*) 
+        FROM   [sms] AS [sms] 
+        WHERE  [sms].[numero] = [ligne].[numero]) AS [SMSCount] 
+FROM   [ligne_telephonique] AS [ligne] 
+WHERE  [ligne].[numero] = '0661000000' 
 ```
