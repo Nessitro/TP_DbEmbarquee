@@ -1,8 +1,4 @@
-# TP_DbEmbarquee
-
-## Travaux pratique : Bases de données embarquées
-
----
+# Travaux pratique : Bases de données embarquées
 
 1. Création de la base de données recharges:
 
