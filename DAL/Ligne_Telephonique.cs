@@ -17,6 +17,9 @@ namespace DAL
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Ligne_Telephonique()
         {
+            this.Appel = new HashSet<Appel>();
+            this.Recharge = new HashSet<Recharge>();
+            this.ServiceMovies = new HashSet<ServiceMovies>();
             this.SMS = new HashSet<SMS>();
         }
     
@@ -28,7 +31,13 @@ namespace DAL
         public string CIN { get; set; }
     
         public virtual Agence Agence1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Appel> Appel { get; set; }
         public virtual Clients Clients { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Recharge> Recharge { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ServiceMovies> ServiceMovies { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SMS> SMS { get; set; }
     }

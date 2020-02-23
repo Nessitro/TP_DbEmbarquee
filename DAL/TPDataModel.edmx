@@ -4,7 +4,13 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="TPDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TPDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Agence">
           <Key>
             <PropertyRef Name="CodeAgence" />
@@ -14,6 +20,17 @@
           <Property Name="Ville" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Telephone" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Appel">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Vers" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DebutCommunication" Type="datetime" Nullable="false" />
+          <Property Name="FinCommunication" Type="int" Nullable="false" />
+          <Property Name="PrixParSeconds" Type="float" Nullable="false" />
+          <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Clients">
           <Key>
@@ -39,6 +56,30 @@
           <Property Name="Agence" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CIN" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="Recharge">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DataRecharge" Type="datetime" Nullable="false" />
+          <Property Name="Montant" Type="int" Nullable="false" />
+          <Property Name="Solde" Type="int" Nullable="false" />
+          <Property Name="Internet" Type="int" Nullable="false" />
+          <Property Name="Duree" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ServiceMovies">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="URL" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Token" Type="date" Nullable="false" />
+          <Property Name="Prix" Type="float" Nullable="false" />
+          <Property Name="DateAbonn" Type="datetime" Nullable="false" />
+          <Property Name="Duree" Type="int" Nullable="false" />
+          <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="SMS">
           <Key>
             <PropertyRef Name="Id" />
@@ -50,6 +91,28 @@
           <Property Name="PrixSms" Type="float" Nullable="false" />
           <Property Name="Numero" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_Appel_ToLigne_Telephonique">
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
+          <End Role="Appel" Type="Self.Appel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="Appel">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ligne_Telephonique_ToAgence">
           <End Role="Agence" Type="Self.Agence" Multiplicity="1" />
           <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
@@ -71,6 +134,30 @@
             </Principal>
             <Dependent Role="Ligne_Telephonique">
               <PropertyRef Name="CIN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Recharge_ToLigne_Telephonique">
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
+          <End Role="Recharge" Type="Self.Recharge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="Recharge">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceMovies_ToLigne_Telephonique">
+          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
+          <End Role="ServiceMovies" Type="Self.ServiceMovies" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="ServiceMovies">
+              <PropertyRef Name="Numero" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -87,10 +174,19 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="TPDbModelStoreContainer">
+          <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Agence" EntityType="Self.Agence" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Appel" EntityType="Self.Appel" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Clients" EntityType="Self.Clients" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ligne_Telephonique" EntityType="Self.Ligne_Telephonique" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Recharge" EntityType="Self.Recharge" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ServiceMovies" EntityType="Self.ServiceMovies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SMS" EntityType="Self.SMS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Appel_ToLigne_Telephonique" Association="Self.FK_Appel_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="Appel" EntitySet="Appel" />
+          </AssociationSet>
           <AssociationSet Name="FK_Ligne_Telephonique_ToAgence" Association="Self.FK_Ligne_Telephonique_ToAgence">
             <End Role="Agence" EntitySet="Agence" />
             <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
@@ -99,70 +195,169 @@
             <End Role="Clients" EntitySet="Clients" />
             <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
           </AssociationSet>
+          <AssociationSet Name="FK_Recharge_ToLigne_Telephonique" Association="Self.FK_Recharge_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="Recharge" EntitySet="Recharge" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceMovies_ToLigne_Telephonique" Association="Self.FK_ServiceMovies_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="ServiceMovies" EntitySet="ServiceMovies" />
+          </AssociationSet>
           <AssociationSet Name="FK_SMS_ToLigne_Telephonique" Association="Self.FK_SMS_ToLigne_Telephonique">
             <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
             <End Role="SMS" EntitySet="SMS" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TPDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TPDataContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__RefactorLog" EntityType="TPDbModel.C__RefactorLog" />
+          <EntitySet Name="Agence" EntityType="TPDbModel.Agence" />
+          <EntitySet Name="Appel" EntityType="TPDbModel.Appel" />
+          <EntitySet Name="Clients" EntityType="TPDbModel.Clients" />
+          <EntitySet Name="Ligne_Telephonique" EntityType="TPDbModel.Ligne_Telephonique" />
+          <EntitySet Name="Recharge" EntityType="TPDbModel.Recharge" />
+          <EntitySet Name="ServiceMovies" EntityType="TPDbModel.ServiceMovies" />
+          <EntitySet Name="SMS" EntityType="TPDbModel.SMS" />
+          <EntitySet Name="sysdiagrams" EntityType="TPDbModel.sysdiagrams" />
+          <AssociationSet Name="FK_Ligne_Telephonique_ToAgence" Association="TPDbModel.FK_Ligne_Telephonique_ToAgence">
+            <End Role="Agence" EntitySet="Agence" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Appel_ToLigne_Telephonique" Association="TPDbModel.FK_Appel_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="Appel" EntitySet="Appel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ligne_Telephonique_ToClients" Association="TPDbModel.FK_Ligne_Telephonique_ToClients">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Recharge_ToLigne_Telephonique" Association="TPDbModel.FK_Recharge_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="Recharge" EntitySet="Recharge" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceMovies_ToLigne_Telephonique" Association="TPDbModel.FK_ServiceMovies_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="ServiceMovies" EntitySet="ServiceMovies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SMS_ToLigne_Telephonique" Association="TPDbModel.FK_SMS_ToLigne_Telephonique">
+            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
+            <End Role="SMS" EntitySet="SMS" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="C__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="Guid" Nullable="false" />
+        </EntityType>
         <EntityType Name="Agence">
           <Key>
             <PropertyRef Name="CodeAgence" />
           </Key>
-          <Property Name="CodeAgence" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Adresse" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Ville" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Telephone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_Ligne_Telephonique_ToAgence" FromRole="Agence" ToRole="Ligne_Telephonique" />
+          <Property Name="CodeAgence" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Adresse" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Ville" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Telephone" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_Ligne_Telephonique_ToAgence" FromRole="Agence" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <EntityType Name="Appel">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Vers" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DebutCommunication" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FinCommunication" Type="Int32" Nullable="false" />
+          <Property Name="PrixParSeconds" Type="Double" Nullable="false" />
+          <Property Name="Numero" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_Appel_ToLigne_Telephonique" FromRole="Appel" ToRole="Ligne_Telephonique" />
         </EntityType>
         <EntityType Name="Clients">
           <Key>
             <PropertyRef Name="CIN" />
           </Key>
-          <Property Name="CIN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Nom" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Prenom" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CIN" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Nom" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Prenom" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DateNaissance" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Adresse" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Ville" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_Ligne_Telephonique_ToClients" FromRole="Clients" ToRole="Ligne_Telephonique" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Adresse" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Ville" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_Ligne_Telephonique_ToClients" FromRole="Clients" ToRole="Ligne_Telephonique" />
         </EntityType>
         <EntityType Name="Ligne_Telephonique">
           <Key>
             <PropertyRef Name="Numero" />
           </Key>
-          <Property Name="Numero" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Numero" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DateActivationGSM" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CodeAgence" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CodeAgence" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="EtatLigne" Type="Boolean" Nullable="false" />
-          <Property Name="Agence" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CIN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Agence1" Relationship="Self.FK_Ligne_Telephonique_ToAgence" FromRole="Ligne_Telephonique" ToRole="Agence" />
-          <NavigationProperty Name="Clients" Relationship="Self.FK_Ligne_Telephonique_ToClients" FromRole="Ligne_Telephonique" ToRole="Clients" />
-          <NavigationProperty Name="SMS" Relationship="Self.FK_SMS_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="SMS" />
+          <Property Name="Agence" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CIN" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Agence1" Relationship="TPDbModel.FK_Ligne_Telephonique_ToAgence" FromRole="Ligne_Telephonique" ToRole="Agence" />
+          <NavigationProperty Name="Appel" Relationship="TPDbModel.FK_Appel_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="Appel" />
+          <NavigationProperty Name="Clients" Relationship="TPDbModel.FK_Ligne_Telephonique_ToClients" FromRole="Ligne_Telephonique" ToRole="Clients" />
+          <NavigationProperty Name="Recharge" Relationship="TPDbModel.FK_Recharge_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="Recharge" />
+          <NavigationProperty Name="ServiceMovies" Relationship="TPDbModel.FK_ServiceMovies_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="ServiceMovies" />
+          <NavigationProperty Name="SMS" Relationship="TPDbModel.FK_SMS_ToLigne_Telephonique" FromRole="Ligne_Telephonique" ToRole="SMS" />
+        </EntityType>
+        <EntityType Name="Recharge">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Numero" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DataRecharge" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Montant" Type="Int32" Nullable="false" />
+          <Property Name="Solde" Type="Int32" Nullable="false" />
+          <Property Name="Internet" Type="Int32" Nullable="false" />
+          <Property Name="Duree" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_Recharge_ToLigne_Telephonique" FromRole="Recharge" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <EntityType Name="ServiceMovies">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="URL" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Token" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Prix" Type="Double" Nullable="false" />
+          <Property Name="DateAbonn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Duree" Type="Int32" Nullable="false" />
+          <Property Name="Numero" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_ServiceMovies_ToLigne_Telephonique" FromRole="ServiceMovies" ToRole="Ligne_Telephonique" />
         </EntityType>
         <EntityType Name="SMS">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Vers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Vers" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DateEnvoi" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TextSms" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TextSms" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PrixSms" Type="Double" Nullable="false" />
-          <Property Name="Numero" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Ligne_Telephonique" Relationship="Self.FK_SMS_ToLigne_Telephonique" FromRole="SMS" ToRole="Ligne_Telephonique" />
+          <Property Name="Numero" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ligne_Telephonique" Relationship="TPDbModel.FK_SMS_ToLigne_Telephonique" FromRole="SMS" ToRole="Ligne_Telephonique" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_Ligne_Telephonique_ToAgence">
-          <End Role="Agence" Type="Self.Agence" Multiplicity="1" />
-          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <End Type="TPDbModel.Agence" Role="Agence" Multiplicity="1" />
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Agence">
               <PropertyRef Name="CodeAgence" />
@@ -172,9 +367,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Appel_ToLigne_Telephonique">
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="1" />
+          <End Type="TPDbModel.Appel" Role="Appel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="Appel">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ligne_Telephonique_ToClients">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
-          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="*" />
+          <End Type="TPDbModel.Clients" Role="Clients" Multiplicity="1" />
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Clients">
               <PropertyRef Name="CIN" />
@@ -184,9 +391,33 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Recharge_ToLigne_Telephonique">
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="1" />
+          <End Type="TPDbModel.Recharge" Role="Recharge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="Recharge">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceMovies_ToLigne_Telephonique">
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="1" />
+          <End Type="TPDbModel.ServiceMovies" Role="ServiceMovies" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ligne_Telephonique">
+              <PropertyRef Name="Numero" />
+            </Principal>
+            <Dependent Role="ServiceMovies">
+              <PropertyRef Name="Numero" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SMS_ToLigne_Telephonique">
-          <End Role="Ligne_Telephonique" Type="Self.Ligne_Telephonique" Multiplicity="1" />
-          <End Role="SMS" Type="Self.SMS" Multiplicity="*" />
+          <End Type="TPDbModel.Ligne_Telephonique" Role="Ligne_Telephonique" Multiplicity="1" />
+          <End Type="TPDbModel.SMS" Role="SMS" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Ligne_Telephonique">
               <PropertyRef Name="Numero" />
@@ -196,76 +427,114 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="TPDataContext" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Agence" EntityType="Self.Agence" />
-          <EntitySet Name="Clients" EntityType="Self.Clients" />
-          <EntitySet Name="Ligne_Telephonique" EntityType="Self.Ligne_Telephonique" />
-          <EntitySet Name="SMS" EntityType="Self.SMS" />
-          <AssociationSet Name="FK_Ligne_Telephonique_ToAgence" Association="Self.FK_Ligne_Telephonique_ToAgence">
-            <End Role="Agence" EntitySet="Agence" />
-            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ligne_Telephonique_ToClients" Association="Self.FK_Ligne_Telephonique_ToClients">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SMS_ToLigne_Telephonique" Association="Self.FK_SMS_ToLigne_Telephonique">
-            <End Role="Ligne_Telephonique" EntitySet="Ligne_Telephonique" />
-            <End Role="SMS" EntitySet="SMS" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="TPDbModelStoreContainer" CdmEntityContainer="TPDataContext">
+          <EntitySetMapping Name="C__RefactorLog">
+            <EntityTypeMapping TypeName="TPDbModel.C__RefactorLog">
+              <MappingFragment StoreEntitySet="__RefactorLog">
+                <ScalarProperty Name="OperationKey" ColumnName="OperationKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Agence">
             <EntityTypeMapping TypeName="TPDbModel.Agence">
               <MappingFragment StoreEntitySet="Agence">
-                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
-                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
-                <ScalarProperty Name="Ville" ColumnName="Ville" />
-                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="Ville" ColumnName="Ville" />
+                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
+                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Appel">
+            <EntityTypeMapping TypeName="TPDbModel.Appel">
+              <MappingFragment StoreEntitySet="Appel">
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+                <ScalarProperty Name="PrixParSeconds" ColumnName="PrixParSeconds" />
+                <ScalarProperty Name="FinCommunication" ColumnName="FinCommunication" />
+                <ScalarProperty Name="DebutCommunication" ColumnName="DebutCommunication" />
+                <ScalarProperty Name="Vers" ColumnName="Vers" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Clients">
             <EntityTypeMapping TypeName="TPDbModel.Clients">
               <MappingFragment StoreEntitySet="Clients">
-                <ScalarProperty Name="CIN" ColumnName="CIN" />
-                <ScalarProperty Name="Nom" ColumnName="Nom" />
-                <ScalarProperty Name="Prenom" ColumnName="Prenom" />
-                <ScalarProperty Name="DateNaissance" ColumnName="DateNaissance" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
                 <ScalarProperty Name="Ville" ColumnName="Ville" />
+                <ScalarProperty Name="Adresse" ColumnName="Adresse" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="DateNaissance" ColumnName="DateNaissance" />
+                <ScalarProperty Name="Prenom" ColumnName="Prenom" />
+                <ScalarProperty Name="Nom" ColumnName="Nom" />
+                <ScalarProperty Name="CIN" ColumnName="CIN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Ligne_Telephonique">
             <EntityTypeMapping TypeName="TPDbModel.Ligne_Telephonique">
               <MappingFragment StoreEntitySet="Ligne_Telephonique">
-                <ScalarProperty Name="Numero" ColumnName="Numero" />
-                <ScalarProperty Name="DateActivationGSM" ColumnName="DateActivationGSM" />
-                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
-                <ScalarProperty Name="EtatLigne" ColumnName="EtatLigne" />
-                <ScalarProperty Name="Agence" ColumnName="Agence" />
                 <ScalarProperty Name="CIN" ColumnName="CIN" />
+                <ScalarProperty Name="Agence" ColumnName="Agence" />
+                <ScalarProperty Name="EtatLigne" ColumnName="EtatLigne" />
+                <ScalarProperty Name="CodeAgence" ColumnName="CodeAgence" />
+                <ScalarProperty Name="DateActivationGSM" ColumnName="DateActivationGSM" />
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Recharge">
+            <EntityTypeMapping TypeName="TPDbModel.Recharge">
+              <MappingFragment StoreEntitySet="Recharge">
+                <ScalarProperty Name="Duree" ColumnName="Duree" />
+                <ScalarProperty Name="Internet" ColumnName="Internet" />
+                <ScalarProperty Name="Solde" ColumnName="Solde" />
+                <ScalarProperty Name="Montant" ColumnName="Montant" />
+                <ScalarProperty Name="DataRecharge" ColumnName="DataRecharge" />
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServiceMovies">
+            <EntityTypeMapping TypeName="TPDbModel.ServiceMovies">
+              <MappingFragment StoreEntitySet="ServiceMovies">
+                <ScalarProperty Name="Numero" ColumnName="Numero" />
+                <ScalarProperty Name="Duree" ColumnName="Duree" />
+                <ScalarProperty Name="DateAbonn" ColumnName="DateAbonn" />
+                <ScalarProperty Name="Prix" ColumnName="Prix" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="URL" ColumnName="URL" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SMS">
             <EntityTypeMapping TypeName="TPDbModel.SMS">
               <MappingFragment StoreEntitySet="SMS">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Vers" ColumnName="Vers" />
-                <ScalarProperty Name="DateEnvoi" ColumnName="DateEnvoi" />
-                <ScalarProperty Name="TextSms" ColumnName="TextSms" />
-                <ScalarProperty Name="PrixSms" ColumnName="PrixSms" />
                 <ScalarProperty Name="Numero" ColumnName="Numero" />
+                <ScalarProperty Name="PrixSms" ColumnName="PrixSms" />
+                <ScalarProperty Name="TextSms" ColumnName="TextSms" />
+                <ScalarProperty Name="DateEnvoi" ColumnName="DateEnvoi" />
+                <ScalarProperty Name="Vers" ColumnName="Vers" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="TPDbModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

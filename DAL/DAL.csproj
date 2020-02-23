@@ -56,14 +56,29 @@
     <Compile Include="Agence.cs">
       <DependentUpon>TPDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Appel.cs">
+      <DependentUpon>TPDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Clients.cs">
+      <DependentUpon>TPDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="C__RefactorLog.cs">
       <DependentUpon>TPDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Ligne_Telephonique.cs">
       <DependentUpon>TPDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recharge.cs">
+      <DependentUpon>TPDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceMovies.cs">
+      <DependentUpon>TPDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="SMS.cs">
+      <DependentUpon>TPDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sysdiagrams.cs">
       <DependentUpon>TPDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="TPDataModel.Context.cs">

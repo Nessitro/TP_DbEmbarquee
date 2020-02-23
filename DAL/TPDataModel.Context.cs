@@ -25,9 +25,14 @@ namespace DAL
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
         public virtual DbSet<Agence> Agence { get; set; }
+        public virtual DbSet<Appel> Appel { get; set; }
         public virtual DbSet<Clients> Clients { get; set; }
         public virtual DbSet<Ligne_Telephonique> Ligne_Telephonique { get; set; }
+        public virtual DbSet<Recharge> Recharge { get; set; }
+        public virtual DbSet<ServiceMovies> ServiceMovies { get; set; }
         public virtual DbSet<SMS> SMS { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
     }
 }
