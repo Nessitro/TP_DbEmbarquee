@@ -190,45 +190,15 @@ WHERE
 5. Afficher le nombre de ligne fixe par client [Numéro commence par 05]
 
 ```SQL
-SELECT
-   [query].[cin] AS [CIN],
-   Concat([query].[nom], N' ', [query].[prenom]) AS [Client Name],
-   [query].[line count] AS [Line Count]
-FROM
-   (
-      SELECT
-         [client].[cin] AS [CIN],
-         [client].[nom] AS [Nom],
-         [client].[prenom] AS [Prenom],
-         (
-            SELECT
-               Count(1) AS [A1]
-            FROM
-               [dbo].[ligne_telephonique] AS [ligne]
-            WHERE
-               [client].[cin] = [ligne].[cin]
-         )
-         AS [line count]
-      FROM
-         [dbo].[clients] AS [client]
-      WHERE
-         EXISTS
-         (
-            SELECT
-               1 AS [line count]
-            FROM
-               [dbo].[ligne_telephonique] AS [ligne exists]
-            WHERE
-               (
-                  [client].[cin] = [ligne exists].[cin]
-               )
-               AND
-               (
-                  [ligne exists].[numero] LIKE N'05%'
-               )
-         )
-   )
-   AS [query]
+SELECT Count(client.cin), 
+       client.nom, 
+       client.prenom 
+FROM   clients client 
+       JOIN ligne_telephonique ligne 
+         ON client.cin = ligne.cin 
+WHERE  ligne.numero LIKE '05%' 
+GROUP  BY client.nom, 
+          client.prenom 
 ```
 
 7. Afficher les SMS envoyés par le numéro 0661000000
@@ -254,26 +224,12 @@ WHERE
 8. Afficher le nombre de ligne vendu par agence.
 
 ```SQL
-SELECT
-   [query].[codeagence] AS [CodeAgence],
-   [query].[c1] AS [SoldLineCount]
-FROM
-   (
-      SELECT
-         [agence].[codeagence] AS [CodeAgence],
-         (
-            SELECT
-               Count(1) AS [A1]
-            FROM
-               [dbo].[ligne_telephonique] AS [ligne]
-            WHERE
-               [agence].[codeagence] = [ligne].[codeagence]
-         )
-         AS [C1]
-      FROM
-         [dbo].[agence] AS [agence]
-   )
-   AS [query]
+SELECT Count(agence.codeagence), 
+       ligne.agence 
+FROM   agence agence 
+       JOIN ligne_telephonique ligne 
+         ON agence.codeagence = ligne.agence 
+GROUP  BY ligne.agence 
 ```
 
 9. Afficher les lignes Suspendues des agences de la ville de Casablanca
@@ -301,111 +257,46 @@ WHERE
 10. Afficher le solde de chaque client
 
 ```SQL
-SELECT
-   [query].[CIN] AS [ClientCIN],
-   [query].[Numero] AS [LineNumber],
-   CASE
-      WHEN
-         (
-            [query].[lb2] IS NULL
-         )
-      THEN
-         0
-      ELSE
-         [query].[lb1]
-   END
-   AS [LineBalance]
-FROM
-   (
-      SELECT
-         [internalQuery].[Numero] AS [Numero],
-         [internalQuery].[CIN] AS [CIN],
-         [internalQuery].[lb2] AS [lb2],
-         (
-            SELECT
-               SUM([recharge1].[Solde]) AS [A1]
-            FROM
-               [dbo].[Recharge] AS [recharge1]
-            WHERE
-               [internalQuery].[Numero] = [recharge1].[Numero]
-         )
-         AS [lb1]
-      FROM
-         (
-            SELECT
-               [ligne].[Numero] AS [Numero],
-               [ligne].[CIN] AS [CIN],
-               (
-                  SELECT
-                     SUM([recharge2].[Solde]) AS [A1]
-                  FROM
-                     [dbo].[Recharge] AS [recharge2]
-                  WHERE
-                     [ligne].[Numero] = [recharge2].[Numero]
-               )
-               AS [lb2]
-            FROM
-               [dbo].[Ligne_Telephonique] AS [ligne]
-         )
-         AS [internalQuery]
-   )
-   AS [query]
+SELECT Sum(recharge.solde), 
+       client.nom, 
+       client.prenom 
+FROM   clients client 
+       JOIN ligne_telephonique ligne 
+         ON client.cin = ligne.cin 
+       JOIN recharge recharge 
+         ON recharge.numero = ligne.numero 
+GROUP  BY client.nom, 
+          client.prenom 
 ```
 
 11. Afficher les clients qui sont dépassés plus de 20 SMS
 
 ```SQL
-SELECT
-   [query].[cin] AS [LineClientCIN],
-   [query].[numero] AS [LineNumber]
-FROM
-   (
-      SELECT
-         [ligne].[numero] AS [Numero],
-         [ligne].[cin] AS [CIN],
-         (
-            SELECT
-               Count(1) AS [A1]
-            FROM
-               [dbo].[sms] AS [Extent2]
-            WHERE
-               [ligne].[numero] = [Extent2].[numero]
-         )
-         AS [countSMS]
-      FROM
-         [dbo].[ligne_telephonique] AS [ligne]
-   )
-   AS [query]
-WHERE
-   [query].[countsms] > 20
+SELECT client.nom, 
+       client.prenom 
+FROM   clients client 
+       JOIN ligne_telephonique ligne 
+         ON client.cin = ligne.cin 
+       JOIN sms sms 
+         ON sms.numero = ligne.numero 
+GROUP  BY client.nom, 
+          client.prenom 
+HAVING Count(sms.id) > 20 
 ```
 
 12. Afficher les clients dont le solde est 0(I can get clients with all line balance is 0 or the other way since a client may have more than one line + i should take expiration date into account maybe duree or dataRecharge...)
 
 ```SQL
-SELECT
-   [query].[cin] AS [ClientCIN],
-   [query].[numero] AS [ClientNumero]
-FROM
-   (
-      SELECT
-         [ligne].[numero] AS [Numero],
-         [ligne].[cin] AS [CIN],
-         (
-            SELECT
-               Sum([recharge].[solde]) AS [A1]
-            FROM
-               [dbo].[recharge] AS [recharge]
-            WHERE
-               [ligne].[numero] = [recharge].[numero]
-         )
-         AS [sumBalance]
-      FROM
-         [dbo].[ligne_telephonique] AS [ligne]
-   )
-   AS [query]
-WHERE
-   0 = [query].[sumbalance]
+SELECT client.nom, 
+       client.prenom 
+FROM   clients client 
+       JOIN ligne_telephonique ligne 
+         ON client.cin = ligne.cin 
+       JOIN recharge recharge 
+         ON recharge.numero = ligne.numero 
+GROUP  BY client.nom, 
+          client.prenom 
+HAVING Sum(recharge.solde) = 0 
 ```
 
 [//]: # 'TODO when you have time'
@@ -413,7 +304,19 @@ WHERE
 13. Afficher le total des consommations des clients de la ville de Rabat (what total? sms/ internet/ movies/ ???) i'll go with this (total PrixSMS, Total des appels et total des abonnements au service Movies) -- Total des appels => assuming that finComm is total secondes then it's finComm x PrixPerSecond
 
 ```SQL
--- TODO later
+SELECT Sum(recharge.solde), 
+       client.nom, 
+       client.prenom 
+FROM   clients client 
+       JOIN ligne_telephonique ligne 
+         ON client.cin = ligne.cin 
+       JOIN recharge recharge 
+         ON recharge.numero = ligne.numero 
+       JOIN agence agence 
+         ON agence.codeagence = ligne.agence 
+WHERE  agence.ville = 'Rabat' 
+GROUP  BY client.nom, 
+          client.prenom 
 ```
 
 [//]: # 'TODO copy pasta but with specific client id'
